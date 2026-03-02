@@ -206,7 +206,22 @@ sequenceDiagram
 
 Este diagrama se puede exportar como imagen o incluir directamente en la memoria del proyecto si la herramienta utilizada soporta Mermaid.
 
----
+---sequenceDiagram
+    participant U as Usuario (Navegador)
+    participant DNS as Servidor DNS
+    participant N as Servidor Web (Nginx)
+    participant B as Backend/App
+    participant DB as Base de Datos
+
+    U->>DNS: Consulta www.tiendaropa-local.com
+    DNS-->>U: Responde IP del servidor
+    U->>N: Petición HTTPS GET /categoria/camisetas
+    N->>B: Reenvía petición (FastCGI/Proxy)
+    B->>DB: SELECT * FROM productos WHERE categoria="camisetas"
+    DB-->>B: Devuelve filas con productos
+    B-->>N: Respuesta HTTP (HTML generado)
+    N-->>U: Respuesta HTTP 200 OK (HTML)
+
 
 ## Estructura del proyecto
 
