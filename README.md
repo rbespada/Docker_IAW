@@ -125,9 +125,4 @@ sudo nginx -t && sudo systemctl reload nginx
 - [ ] Configurar monitorización y alertas.
 - [ ] Realizar pruebas de carga y seguridad básicas.
 
-## Cómo seguir
 
-Si quieres, puedo generar la carpeta `ejemplo/` con la app Node mínima, la configuración de `Nginx` y scripts de backup, o exportar este `README.md` a PDF/Presentación.
-
----
-Proyecto entregado: informe y diagrama listos.
