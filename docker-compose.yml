@@ -48,10 +48,98 @@ services:
       retries: 3
       start_period: 10s
 
+  db:
+    image: postgres:15-alpine
+    container_name: webstack_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: webstack
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - webstack_network
+    restart: unless-stopped
+
+  product:
+    build:
+      context: ./services/product
+      dockerfile: Dockerfile
+    container_name: webstack_product
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/webstack
+      PORT: 4001
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  cart:
+    build:
+      context: ./services/cart
+      dockerfile: Dockerfile
+    container_name: webstack_cart
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/webstack
+      PORT: 4002
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  user:
+    build:
+      context: ./services/user
+      dockerfile: Dockerfile
+    container_name: webstack_user
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/webstack
+      PORT: 4003
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    container_name: webstack_gateway
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    depends_on:
+      - product
+      - cart
+      - user
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: webstack_frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:4000
+
 networks:
   webstack_network:
     driver: bridge
 
 volumes:
   nginx_logs:
+    driver: local
+  db_data:
     driver: local

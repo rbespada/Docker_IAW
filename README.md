@@ -1,6 +1,56 @@
-# Docker_IAW
-Clases de Implementación de aplicaciones web
-## Proyecto: Publicación de la primera página web de una tienda local
+# Docker_IAW - Proyecto WebStack
+
+**Clases de Implementación de Aplicaciones Web**
+
+## Proyecto: Tienda Online Full-Stack con Microservicios
+
+Este proyecto demuestra una evolución arquitectónica completa desde una aplicación monolítica tradicional hasta una arquitectura moderna de microservicios.
+
+### 📋 Fases del Proyecto
+
+#### **Fase 1: Arquitectura Monolítica (Completada)**
+- Aplicación Node.js + Express única
+- SQLite como base de datos
+- Nginx como reverse proxy
+- Documentación completa en `doc/ARQUITECTURA.md`
+
+#### **Fase 2: Arquitectura de Microservicios (Actual)**
+- 4 microservicios independientes (Product, Cart, User, API Gateway)
+- PostgreSQL 15 como base de datos compartida
+- React 18 + Vite para frontend reactivo
+- Docker Compose para orquestación
+- **Documentación detallada en `doc/MICROSERVICIOS.md`**
+- **Guía de despliegue en `GUIA_DESPLIEGUE.md`**
+
+---
+
+## 🚀 Inicio Rápido
+
+### Requisitos
+- Docker 20.10+
+- Docker Compose 1.29+
+- Git
+
+### Desplegar Localmente
+
+```bash
+cd /workspaces/Docker_IAW
+docker-compose build
+docker-compose up -d
+
+# Esperar 30 segundos a que la BD se inicialice
+sleep 30
+
+# Verificar
+docker-compose ps
+
+# Acceder a:
+# Frontend: http://localhost:5173
+# API Gateway: http://localhost:4000
+# Health: curl http://localhost:4000/health
+```
+
+---
 
 ### 1. Análisis de arquitectura (modelo cliente-servidor)
 
