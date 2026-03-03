@@ -1,0 +1,225 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= titulo %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    header {
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a, nav button {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: #667eea;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    nav a:hover, nav button:hover {
+      background: #f0f0f0;
+      color: #764ba2;
+    }
+    nav .logo { font-size: 1.5rem; font-weight: bold; color: #667eea; }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .carrito-container {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .carrito-vacio {
+      text-align: center;
+      padding: 3rem;
+    }
+    .carrito-vacio h2 {
+      color: #999;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    th {
+      background: #f5f5f5;
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 2px solid #ddd;
+      font-weight: 600;
+      color: #667eea;
+    }
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    .carrito-resumen {
+      display: flex;
+      justify-content: flex-end;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      font-size: 1.2rem;
+    }
+    .carrito-total {
+      font-weight: bold;
+      color: #764ba2;
+      font-size: 1.5rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-danger {
+      background: #e74c3c;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    .botones-acciones {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+    footer {
+      background: rgba(0,0,0,0.8);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+    .carrito-badge {
+      display: inline-block;
+      background: #e74c3c;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      margin-left: 0.25rem;
+    }
+    h1 {
+      color: white;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">🛍️ Tienda Online</a>
+      <div>
+        <a href="/">Inicio</a>
+        <a href="/catalogo">Catálogo</a>
+        <a href="/carrito-view">Carrito <span class="carrito-badge" id="cart-count">0</span></a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <h1>Mi Carrito de Compras</h1>
+    <div class="carrito-container">
+      <% if (cantidad_items === 0) { %>
+        <div class="carrito-vacio">
+          <h2>Tu carrito está vacío</h2>
+          <p style="color: #999; margin-bottom: 1.5rem;">Explora nuestro catálogo y añade productos</p>
+          <a href="/catalogo" class="btn">Ir al Catálogo</a>
+        </div>
+      <% } else { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(item => { %>
+              <tr>
+                <td><%= item.nombre %></td>
+                <td>$<%= item.precio.toFixed(2) %></td>
+                <td><%= item.cantidad %></td>
+                <td>$<%= (item.precio * item.cantidad).toFixed(2) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        
+        <div class="carrito-resumen">
+          <div>Total (<%= cantidad_items %> items): <span class="carrito-total">$<%= total %></span></div>
+        </div>
+        
+        <div class="botones-acciones">
+          <button onclick="vaciarCarrito()" class="btn btn-danger">Vaciar Carrito</button>
+          <button class="btn" onclick="procederPago()">Proceder al Pago</button>
+        </div>
+      <% } %>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2024 WebStack Project - Tienda Online Dinámica. Arquitectura Cliente-Servidor con Nginx.</p>
+  </footer>
+  <script>
+    function actualizarCarrito() {
+      location.reload();
+    }
+    
+    function vaciarCarrito() {
+      if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+        fetch('/api/carrito', { method: 'DELETE' })
+          .then(r => r.json())
+          .then(data => {
+            alert('Carrito vaciado');
+            actualizarCarrito();
+          })
+          .catch(e => {
+            alert('Error al vaciar el carrito');
+            console.error(e);
+          });
+      }
+    }
+    
+    function procederPago() {
+      alert('Función de pago no disponible en esta versión de demostración');
+    }
+  </script>
+</body>
+</html>
