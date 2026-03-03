@@ -1,0 +1,30 @@
+{
+  "name": "service-cms",
+  "version": "0.1.0",
+  "description": "Strapi CMS microservice",
+  "private": true,
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "strapi": "^4.13.2",
+    "strapi-plugin-users-permissions": "^4.13.2",
+    "strapi-plugin-upload": "^4.13.2",
+    "@strapi/plugin-i18n": "^4.13.2",
+    "better-sqlite3": "^9.0.0",
+    "@strapi/utils": "^4.13.2",
+    "@strapi/core": "^4.13.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=20.x.x",
+    "npm": ">=8.6.0"
+  }
+}

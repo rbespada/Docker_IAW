@@ -1,52 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { getProducts, addToCart } from './api';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Home from './pages/Home';
+import CartPage from './pages/CartPage';
+import InfrastructurePanel from './pages/InfrastructurePanel';
+import SecurityPanel from './pages/SecurityPanel';
+import CertificatesPanel from './pages/CertificatesPanel';
+import SystemStatus from './pages/SystemStatus';
 import './App.css';
 
 export default function App() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts();
-        setProducts(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  const handleAddToCart = async (productId) => {
-    try {
-      await addToCart({ product_id: productId, quantity: 1 });
-      alert('Producto añadido al carrito');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-    }
-  };
-
-  if (loading) return <div className="loading">Cargando productos...</div>;
-
   return (
-    <div className="app">
-      <h1>🛍️ Tienda Online - Microservicios</h1>
-      <div className="products">
-        {products.map(product => (
-          <div key={product.id} className="product-card">
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <p className="price">${product.price}</p>
-            <p className="stock">Stock: {product.stock}</p>
-            <button onClick={() => handleAddToCart(product.id)}>
-              Agregar al carrito
-            </button>
-          </div>
-        ))}
+    <Router>
+      <nav className="main-nav">
+        <Link to="/">Inicio</Link>
+        <Link to="/cart">Bolsa</Link>
+        <Link to="/infrastructure">Infraestructura</Link>
+        <Link to="/security">Seguridad</Link>
+        <Link to="/certificates">Certificados</Link>
+        <Link to="/status">Estado del Sistema</Link>
+      </nav>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/infrastructure" element={<InfrastructurePanel />} />
+          <Route path="/security" element={<SecurityPanel />} />
+          <Route path="/certificates" element={<CertificatesPanel />} />
+          <Route path="/status" element={<SystemStatus />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }

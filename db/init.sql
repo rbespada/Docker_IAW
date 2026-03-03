@@ -20,6 +20,16 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  items JSONB NOT NULL,
+  total NUMERIC NOT NULL,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insertar productos iniciales
 INSERT INTO products (name, description, price, stock) VALUES
   ('Laptop Dell XPS', 'Laptop de rendimiento superior', 999.99, 5),

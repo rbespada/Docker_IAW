@@ -134,6 +134,40 @@ services:
     environment:
       VITE_API_URL: http://localhost:4000
 
+  cms:
+    build:
+      context: ./services/cms
+      dockerfile: Dockerfile
+    container_name: webstack_cms
+    ports:
+      - "1337:1337"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=1337
+    volumes:
+      - cms_data:/srv/app/data
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  orders:
+    build:
+      context: ./services/orders
+      dockerfile: Dockerfile
+    container_name: webstack_orders
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/webstack
+      PORT: 4004
+    networks:
+      - webstack_network
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "4004:4004"
+
 networks:
   webstack_network:
     driver: bridge
@@ -142,4 +176,6 @@ volumes:
   nginx_logs:
     driver: local
   db_data:
+    driver: local
+  cms_data:
     driver: local

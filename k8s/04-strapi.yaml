@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: strapi-pvc
+  namespace: webstack
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strapi
+  namespace: webstack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: strapi
+  template:
+    metadata:
+      labels:
+        app: strapi
+    spec:
+      containers:
+      - name: strapi
+        image: webstack/strapi:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1337
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: webstack-config
+              key: NODE_ENV
+        - name: STRAPI_HOST
+          value: "0.0.0.0"
+        - name: STRAPI_PORT
+          value: "1337"
+        - name: DATABASE_CLIENT
+          value: "postgres"
+        - name: DATABASE_HOST
+          value: "postgres"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "webstack"
+        - name: DATABASE_USERNAME
+          value: "postgres"
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: webstack-secrets
+              key: DB_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: webstack-secrets
+              key: STRAPI_JWT_SECRET
+        - name: ADMIN_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: webstack-secrets
+              key: STRAPI_ADMIN_JWT_SECRET
+        - name: API_TOKEN_SALT
+          valueFrom:
+            secretKeyRef:
+              name: webstack-secrets
+              key: STRAPI_API_TOKEN_SALT
+        volumeMounts:
+        - name: strapi-data
+          mountPath: /srv/app
+        livenessProbe:
+          httpGet:
+            path: /admin
+            port: 1337
+          initialDelaySeconds: 60
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /admin
+            port: 1337
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+      volumes:
+      - name: strapi-data
+        persistentVolumeClaim:
+          claimName: strapi-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: strapi
+  namespace: webstack
+spec:
+  selector:
+    app: strapi
+  ports:
+  - port: 1337
+    targetPort: 1337
+  type: LoadBalancer

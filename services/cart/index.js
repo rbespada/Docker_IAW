@@ -30,6 +30,34 @@ app.post('/cart', async (req, res) => {
   }
 });
 
+// update quantity for an item
+app.patch('/cart/:id', async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE cart_items SET quantity = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
+      [quantity, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// remove item from cart
+app.delete('/cart/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM cart_items WHERE id = $1', [id]);
+    res.status(204).end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 app.listen(process.env.PORT || 4002, () => {
   console.log('Cart service running on port', process.env.PORT || 4002);
 });

@@ -11,4 +11,9 @@ export const addToCart = (data) => api.post('/cart', data);
 export const loginUser = (data) => api.post('/login', data);
 export const registerUser = (data) => api.post('/users', data);
 
+// additional endpoints for administration panels
+export const getSystemStatus = () => api.get('/stats');
+export const getSecurityInfo = () => api.get('/security');
+export const getCertificates = () => api.get('/certificates');
+
 export default api;
